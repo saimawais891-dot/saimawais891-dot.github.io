@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LORVÉN — TIMELESS LUXURY</title>
+<style>
+:root{--g:#071b15;--g2:#0d2b21;--gold:#c8a56a;--cream:#f3eee3}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--g);font-family:Georgia,serif}
+header{background:var(--g);color:var(--cream);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.logo{color:var(--gold);font-size:28px;letter-spacing:5px;font-weight:bold}.tag{font:11px Arial;letter-spacing:3px}
+nav a{color:var(--cream);margin-left:22px;text-decoration:none;font:13px Arial}
+.hero{min-height:620px;background:linear-gradient(135deg,var(--g),var(--g2));color:var(--cream);display:grid;place-items:center;text-align:center;padding:40px}
+.hero h1{font-size:clamp(52px,9vw,105px);letter-spacing:9px;margin:12px 0}
+.hero p{max-width:620px;margin:0 auto 28px;color:#ddd;font-size:18px}.eyebrow{color:var(--gold);font:12px Arial;letter-spacing:5px}
+.btn{display:inline-block;border:1px solid var(--gold);background:var(--gold);color:var(--g);padding:14px 25px;font:600 12px Arial;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer}
+section{max-width:1150px;margin:auto;padding:70px 6%}.title{text-align:center;margin-bottom:35px}.title h2{font-size:40px;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.box{background:white;border:1px solid #ddd4c5;padding:28px;text-align:center}.box b{display:block;margin-bottom:8px}.box span{font:12px Arial;color:#777}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.product{background:white;border:1px solid #ddd4c5}.pic{height:290px;background:linear-gradient(145deg,#17382b,var(--g));display:grid;place-items:center;color:var(--gold);font-size:32px;letter-spacing:4px}.info{padding:20px}.price{color:#9b7638;font:bold 14px Arial;margin:8px 0 15px}
+.dark{background:var(--g);color:var(--cream);max-width:none;text-align:center}.dark>div{max-width:850px;margin:auto}.dark p{color:#d6d0c3}
+footer{background:#04100c;color:#bbb;text-align:center;padding:45px 20px}.social{color:var(--gold);font:13px Arial;margin-top:15px}
+.cart{position:fixed;right:20px;bottom:20px;background:var(--gold);border:0;border-radius:50%;width:58px;height:58px;font-size:20px;cursor:pointer}
+@media(max-width:800px){.grid,.products{grid-template-columns:1fr 1fr}nav{display:none}}
+@media(max-width:520px){.grid,.products{grid-template-columns:1fr}.tag{display:none}}
+</style>
+</head>
+<body>
+<header><div class="logo">LORVÉN</div><nav><a href="#collection">Collection</a><a href="#about">About</a><a href="#delivery">Delivery</a><a href="#contact">Contact</a></nav><div class="tag">TIMELESS LUXURY</div></header>
+
+<section class="hero">
+<div><div class="eyebrow">LORVÉN</div><h1>TIMELESS<br>LUXURY</h1><p>More than a product — a statement of refined taste, crafted for those who appreciate timeless style.</p><a class="btn" href="#collection">Explore Collection</a></div>
+</section>
+
+<section><div class="grid">
+<div class="box"><b>Premium Quality</b><span>Selected with care.</span></div>
+<div class="box"><b>Secure Ordering</b><span>Simple direct checkout.</span></div>
+<div class="box"><b>3-Day Delivery</b><span>According to city.</span></div>
+<div class="box"><b>Free Delivery</b><span>Orders above Rs. 4,000.</span></div>
+</div></section>
+
+<section id="collection"><div class="title"><h2>The Collection</h2><p>Premium pieces from LORVÉN.</p></div>
+<div class="products" id="products"></div></section>
+
+<section class="dark" id="about"><div><div class="eyebrow">OUR PHILOSOPHY</div><h2>Designed for a timeless impression.</h2><p>LORVÉN brings together refined presentation and a simple premium shopping experience.</p></div></section>
+
+<section id="delivery"><div class="title"><h2>Delivery & Payment</h2><p>Clear and simple ordering.</p></div>
+<div class="grid">
+<div class="box"><b>Delivery</b><span>3 days</span></div>
+<div class="box"><b>Charges</b><span>According to city</span></div>
+<div class="box"><b>Payment</b><span>Cash on Delivery</span></div>
+<div class="box"><b>Advance</b><span>Bank account payment</span></div>
+</div>
+<p style="text-align:center;font:13px Arial;color:#777;margin-top:25px">No returns. Please review your order carefully before confirming.</p>
+</section>
+
+<footer id="contact"><div class="logo">LORVÉN</div><div class="tag">TIMELESS LUXURY</div>
+<div class="social">Email: Saimawais891@gmail.com · Instagram: lorven(premiums) · TikTok: @lorven</div>
+<p style="font:12px Arial;color:#777">© 2026 LORVÉN. All rights reserved.</p></footer>
+
+<script>
+const products=[
+{name:"LORVÉN Signature",price:0},
+{name:"LORVÉN Classic",price:0},
+{name:"LORVÉN Premium",price:0}
+];
+// Replace these sample products with your real products later.
+document.getElementById("products").innerHTML=products.map((p,i)=>`
+<article class="product"><div class="pic">LORVÉN</div><div class="info">
+<h3>${p.name}</h3><div class="price">${p.price?"Rs. "+p.price.toLocaleString():"Price coming soon"}</div>
+<button class="btn" onclick="order(${i})">Order on WhatsApp</button></div></article>`).join("");
+function order(i){
+const p=products[i];
+const msg=encodeURIComponent("Hello LORVÉN, I would like to order: "+p.name+(p.price?" — Rs. "+p.price:""));
+window.open("https://wa.me/923096367796?text="+msg,"_blank");
+}
+</script>
+</body>
+</html>
