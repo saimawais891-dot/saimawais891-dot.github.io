@@ -74,5 +74,85 @@ const msg=encodeURIComponent("Hello LORVÉN, I would like to order: "+p.name+(p.
 window.open("https://wa.me/923096367796?text="+msg,"_blank");
 }
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL =
+"https://bexqjshygqmbgatawsni.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_9eSjTgI-z6xkQRyd4pw8Vg_-FjHaUsW";
+
+const supabaseClient =
+supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadSupabaseProducts(){
+
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending:false });
+
+  if(error){
+    console.error("Supabase products error:", error);
+    return;
+  }
+
+  if(!data || data.length === 0) return;
+
+  /*
+    Find the existing product container on the page.
+    The existing website remains unchanged if the container
+    cannot be detected.
+  */
+
+  const possibleContainers = [
+    document.querySelector("#products"),
+    document.querySelector(".products"),
+    document.querySelector(".product-grid"),
+    document.querySelector(".products-grid"),
+    document.querySelector("#productGrid")
+  ];
+
+  const container =
+    possibleContainers.find(x => x);
+
+  if(!container) return;
+
+  data.forEach(product => {
+
+    const item = document.createElement("div");
+
+    item.className = "product-card";
+
+    item.innerHTML = `
+      <img
+        src="${escapeProduct(product.image_url || "")}"
+        alt="${escapeProduct(product.name || "LORVÉN Product")}"
+        style="width:100%;height:260px;object-fit:cover;border-radius:12px"
+      >
+
+      <h3>${escapeProduct(product.name || "")}</h3>
+
+      <p>${escapeProduct(product.description || "")}</p>
+
+      <strong>Rs. ${Number(product.price || 0).toLocaleString()}</strong>
+    `;
+
+    container.appendChild(item);
+  });
+}
+
+function escapeProduct(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+loadSupabaseProducts();
+</script>
 </body>
 </html>
