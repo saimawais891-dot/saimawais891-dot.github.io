@@ -215,12 +215,37 @@ async function loadProducts(){
     </div>
   `).join("");
 }
+async function uploadProductImage(file) {
+  if (!file) return null;
 
-async function addProduct(){
+  const fileName =
+    Date.now() + "-" +
+    file.name.replace(/[^a-zA-Z0-9.-]/g, "-");
+
+  const { error } = await supabaseClient
+    .storage
+    .from("product-images")
+    .upload(fileName, file);
+
+  if (error) {
+    throw error;
+  }
+
+  const { data } =
+    supabaseClient
+      .storage
+      .from("product-images")
+      .getPublicUrl(fileName);
+
+  return data.publicUrl;
+}
+
+async function addProduct()
+
 
   const name=document.getElementById("pname").value.trim();
   const price=Number(document.getElementById("pprice").value || 0);
-  const image_url=document.getElementById("pimage").value.trim();
+  const imageFile=document.getElementById("pimage").files[0];
   const description=document.getElementById("pdesc").value.trim();
   const category=document.getElementById("pcat").value.trim();
   const message=document.getElementById("saveMessage");
@@ -231,7 +256,18 @@ async function addProduct(){
   }
 
   message.textContent="Saving...";
+let image_url = null;
 
+if (imageFile) {
+  message.textContent = "Uploading image...";
+
+  try {
+    image_url = await uploadProductImage(imageFile);
+  } catch (error) {
+    message.textContent = "Image upload failed: " + error.message;
+    return;
+  }
+}
   const {error}=await supabaseClient
     .from("products")
     .insert([{
