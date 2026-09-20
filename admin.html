@@ -110,7 +110,14 @@ const SUPABASE_KEY =
 "sb_publishable_9eSjTgI-z6xkQRyd4pw8Vg_-FjHaUsW";
 
 const supabaseClient =
-supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: window.localStorage
+  }
+});
 
 async function checkLogin(){
   const {data}=await supabaseClient.auth.getSession();
