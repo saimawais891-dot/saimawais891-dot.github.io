@@ -58,21 +58,81 @@ footer{background:#04100c;color:#bbb;text-align:center;padding:45px 20px}.social
 <p style="font:12px Arial;color:#777">© 2026 LORVÉN. All rights reserved.</p></footer>
 
 <script>
-const products=[
-{name:"LORVÉN Signature",price:0},
-{name:"LORVÉN Classic",price:0},
-{name:"LORVÉN Premium",price:0}
-];
-// Replace these sample products with your real products later.
-document.getElementById("products").innerHTML=products.map((p,i)=>`
-<article class="product"><div class="pic">LORVÉN</div><div class="info">
-<h3>${p.name}</h3><div class="price">${p.price?"Rs. "+p.price.toLocaleString():"Price coming soon"}</div>
-<button class="btn" onclick="order(${i})">Order on WhatsApp</button></div></article>`).join("");
-function order(i){
-const p=products[i];
-const msg=encodeURIComponent("Hello LORVÉN, I would like to order: "+p.name+(p.price?" — Rs. "+p.price:""));
-window.open("https://wa.me/923096367796?text="+msg,"_blank");
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://bexqjshygqmbgatawsni.supabase.co";
+const SUPABASE_KEY = "sb_publishable_9eSjTgI-z6xkQRyd4pw8Vg_-FjHaUsW";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function loadProducts() {
+  const container = document.getElementById("products");
+
+  container.innerHTML = "<p>Loading products...</p>";
+
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    container.innerHTML = "<p>Products could not be loaded.</p>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>No products available yet.</p>";
+    return;
+  }
+
+  container.innerHTML = data.map((p, i) => `
+    <article class="product">
+      <div class="pic">
+        ${p.image_url
+          ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">`
+          : "LORVÉN"}
+      </div>
+
+      <div class="info">
+        <h3>${p.name}</h3>
+
+        <div class="price">
+          ${p.price ? "Rs. " + Number(p.price).toLocaleString() : "Price coming soon"}
+        </div>
+
+        <button class="btn orderBtn" data-index="${i}">
+          Order on WhatsApp
+        </button>
+      </div>
+    </article>
+  `).join("");
+
+  document.querySelectorAll(".orderBtn").forEach((button, i) => {
+    button.addEventListener("click", () => {
+      orderProduct(data[i]);
+    });
+  });
 }
+
+function orderProduct(product) {
+  const message = encodeURIComponent(
+    "Hello LORVÉN, I would like to order: " +
+    product.name +
+    (product.price ? " — Rs. " + product.price : "")
+  );
+
+  window.open(
+    "https://wa.me/923096367796?text=" + message,
+    "_blank"
+  );
+}
+
+loadProducts();
 </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
