@@ -28,6 +28,170 @@ label{display:block;font-size:13px;font-weight:bold;margin-top:14px}
 #adminPanel{display:none}
 #loginBox{max-width:430px;margin:60px auto}
 @media(max-width:600px){.row{grid-template-columns:1fr}.wrap{padding:12px}}
+  /* ===== LORVÉN PREMIUM DASHBOARD ===== */
+
+body{
+  background:
+    radial-gradient(circle at top right, rgba(201,168,106,.12), transparent 35%),
+    #f6f2e9;
+}
+
+header{
+  background:linear-gradient(135deg,#0d3022,#174b35);
+  padding:22px 24px;
+  box-shadow:0 8px 30px rgba(18,60,43,.15);
+}
+
+.logo{
+  font-family:Georgia,serif;
+  font-size:26px;
+  letter-spacing:5px;
+}
+
+.tag{
+  margin-top:4px;
+  color:#d9bd82;
+  letter-spacing:4px;
+  font-size:10px;
+}
+
+.wrap{
+  max-width:1150px;
+  padding:24px;
+}
+
+.card{
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(201,168,106,.25);
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:0 12px 35px rgba(23,34,28,.07);
+}
+
+.card h2{
+  font-family:Georgia,serif;
+  color:#123c2b;
+  margin-top:0;
+  letter-spacing:.3px;
+}
+
+button{
+  border-radius:12px;
+  padding:13px 18px;
+  font-weight:600;
+  transition:.2s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(18,60,43,.15);
+}
+
+.gold{
+  background:linear-gradient(135deg,#b28b4a,#d7b875);
+  color:white;
+}
+
+input,textarea{
+  background:#fffdf9;
+  border:1px solid #ddd3c2;
+  transition:.2s ease;
+}
+
+input:focus,textarea:focus{
+  outline:none;
+  border-color:#c9a86a;
+  box-shadow:0 0 0 3px rgba(201,168,106,.12);
+}
+
+.notice{
+  background:linear-gradient(135deg,#fffaf0,#f8f1df);
+  border:1px solid #e4cf9e;
+  border-radius:16px;
+  box-shadow:0 8px 22px rgba(80,60,25,.06);
+}
+
+.product{
+  padding:16px 4px;
+}
+
+.product img{
+  width:72px;
+  height:72px;
+  border-radius:14px;
+  box-shadow:0 5px 15px rgba(0,0,0,.10);
+}
+
+/* Dashboard statistics */
+
+.dash-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.stat-card{
+  background:linear-gradient(145deg,#ffffff,#faf7f0);
+  border:1px solid rgba(201,168,106,.28);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 10px 28px rgba(23,34,28,.06);
+}
+
+.stat-label{
+  color:#68736d;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:8px;
+}
+
+.stat-value{
+  color:#123c2b;
+  font-family:Georgia,serif;
+  font-size:28px;
+  font-weight:bold;
+}
+
+@media(max-width:800px){
+  .dash-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .wrap{
+    padding:14px;
+  }
+
+  header{
+    padding:18px;
+  }
+
+  .logo{
+    font-size:22px;
+  }
+
+  .card{
+    padding:17px;
+    border-radius:17px;
+  }
+
+  .dash-grid{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stat-card{
+    padding:16px;
+  }
+
+  .stat-value{
+    font-size:23px;
+  }
+}
 </style>
 </head>
 
@@ -57,7 +221,29 @@ label{display:block;font-size:13px;font-weight:bold;margin-top:14px}
 </div>
 
 <main id="adminPanel" class="wrap">
+<section class="dash-grid" aria-label="Dashboard overview">
 
+  <div class="stat-card">
+    <div class="stat-label">Total Products</div>
+    <div id="statProducts" class="stat-value">0</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">In Stock</div>
+    <div id="statStock" class="stat-value">0</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Low Stock</div>
+    <div id="statLow" class="stat-value">0</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Catalog Value</div>
+    <div id="statValue" class="stat-value">Rs. 0</div>
+  </div>
+
+</section>
   <div class="notice">
     <b>LORVÉN Admin Control Panel</b><br>
     Products are connected to Supabase.
@@ -175,7 +361,10 @@ async function logout(){
 }
 
 async function loadProducts(){
-
+  const statProducts = document.getElementById("statProducts");
+  const statStock = document.getElementById("statStock");
+  const statLow = document.getElementById("statLow");
+  const statValue = document.getElementById("statValue");
   const list=document.getElementById("productList");
   list.innerHTML="Loading products...";
 
@@ -189,7 +378,21 @@ async function loadProducts(){
     console.error(error);
     return;
   }
+statProducts.textContent = data.length;
 
+const inStock = data.filter(p => Number(p.stock) > 0).length;
+
+const lowStock = data.filter(
+  p => Number(p.stock) > 0 && Number(p.stock) <= 5
+).length;
+
+const catalogValue = data.reduce((total, p) => {
+  return total + (Number(p.price) * Number(p.stock || 0));
+}, 0);
+
+statStock.textContent = inStock;
+statLow.textContent = lowStock;
+statValue.textContent = "Rs. " + catalogValue.toLocaleString();
   if(!data || data.length===0){
     list.innerHTML='<p class="muted">No products yet.</p>';
     return;
